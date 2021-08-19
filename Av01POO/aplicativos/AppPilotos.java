@@ -84,7 +84,29 @@ public class AppPilotos {
                 Aeronave aeronave = new Aeronave();
 
                 System.out.println("Categoria da Aeronave (Asa Fixa ou Asa Movel): ");
-                aeronave.setCategoria(in.nextLine());
+                System.out.println("1 - Asa Fixa  \n2 - Asa Móvel  ");
+                String categoria = "UNKNOWN";
+                int categoriaDigito = 0;
+                boolean verificador = false;
+
+                do {
+                    try {
+                        categoriaDigito = in.nextInt();
+                        verificador = true;
+                    } catch (InputMismatchException ex) {
+                        System.out.println("Digite Somente Números!!");
+                        
+                    }
+                } while (!verificador);
+
+                if (categoriaDigito == 1){
+                    categoria = "Asa Fixa";
+                } else if (categoriaDigito == 2) {
+                    categoria = "Asa Móvel";
+                } else {
+                    System.out.println("Categoria Desconhecida!! ");
+                }
+                aeronave.setCategoria(categoria);
 
                 System.out.println("Modelo da Aeronave: ");
                 aeronave.setModelo(in.nextLine());
@@ -159,7 +181,18 @@ public class AppPilotos {
             } else if (opcao == 4) {
             /* */ 
                 System.out.print("Novo tamanho do armazenamento: ");
-                int tamanhoNovo = in.nextInt();
+                int tamanhoNovo = 0;
+                try {
+                    tamanhoNovo = in.nextInt();
+                } catch (InputMismatchException ex) {
+                    System.out.println("Digite Somente Números!!");
+                    continue;
+                }
+
+                if(tamanhoNovo == 0){
+                    System.out.println("O tamanho não pode ser = 0!! ");
+                    continue;
+                }
                 in.nextLine(); // Remove o entre preso no Buffer
 
                 if(tamanhoNovo < qtdCadastrados) { // Verifica se o tamanho novo pode causar perdo de danos, qtdCadastrados não pode ser menor de o tamanhoNovo
