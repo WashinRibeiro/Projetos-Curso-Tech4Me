@@ -82,6 +82,7 @@ public class AppPilotos {
                 }while(cadastrado == false);
 
                 Aeronave aeronave = new Aeronave();
+                aeronave.setPiloto(pilotoParaCadastrar); // Adiciona a a pessoa em uma aeronave
 
                 System.out.println("Categoria da Aeronave (Asa Fixa ou Asa Movel): ");
                 System.out.println("1 - Asa Fixa  \n2 - Asa Móvel  ");
@@ -92,6 +93,7 @@ public class AppPilotos {
                 do {
                     try {
                         categoriaDigito = in.nextInt();
+                        in.nextLine();
                         verificador = true;
                     } catch (InputMismatchException ex) {
                         System.out.println("Digite Somente Números!!");
@@ -111,9 +113,8 @@ public class AppPilotos {
                 System.out.println("Modelo da Aeronave: ");
                 aeronave.setModelo(in.nextLine());
 
-                pilotoParaCadastrar.setAeronave(aeronave); // Adiciona a aeronave ao tipo Pessoa
-
                 vetorPilotos.setPilotos(pilotoParaCadastrar, qtdCadastrados);
+                vetorPilotos.setAeronaves(aeronave, qtdCadastrados);
                 
                 qtdCadastrados++;
 
@@ -122,13 +123,23 @@ public class AppPilotos {
 
             } else if (opcao == 2) {
                 /**/ 
+
                 
                 for(int i = 0; i < qtdCadastrados; i++){
-                    System.out.printf("\n-> Piloto número %d \nNome: %s \nMatrícula: %s \nCPF: %s\nAeronave Modelo: %s\n\n",
+                    System.out.printf("\n-> Piloto número %d \nNome: %s \nMatrícula: %s \nCPF: %s\n\n",
                         i + 1, vetorPilotos.getPilotos()[i].getNome(), 
                         vetorPilotos.getPilotos()[i].getMatricula(), 
-                        vetorPilotos.getPilotos()[i].getCpf(),
-                        vetorPilotos.getPilotos()[i].getAeronave().getModelo());
+                        vetorPilotos.getPilotos()[i].getCpf());
+
+                    // Printa cada aeronave pertence ao mesmo piloto, caso seja o caso
+                    Aeronave aeronavesDoPilotoAtual = new Aeronave();
+                    aeronavesDoPilotoAtual = encontrarPilotoEmUmaAeronave(vetorPilotos.getAeronaves(), vetorPilotos.getPilotos()[i].getCpf());
+                
+                    System.out.println("Aeronave do piloto: ");
+                    // Exibe as Aeronaves do Piloto atual
+                    System.out.printf("> %s\n\n", aeronavesDoPilotoAtual.getModelo());
+
+                        
                 }
                 /* */
                 voltarMenu(in);
@@ -156,11 +167,13 @@ public class AppPilotos {
                     }
                     try{
                         Pessoa pilotoEncontrado = new Pessoa(buscarPilotoCPF(cpfSolicitado, qtdCadastrados, vetorPilotos.getPilotos()));
+                        Aeronave aeronaveEncontrada = new Aeronave(encontrarPilotoEmUmaAeronave(vetorPilotos.getAeronaves(),
+                         pilotoEncontrado.getCpf()));
 
                         System.out.println("\nResultado da Busca: ");
                         System.out.printf("Piloto %s \nMatricula: %s \n== CPF: %s ==\nAeronave Modelo: %s",
                         pilotoEncontrado.getNome(), pilotoEncontrado.getMatricula(), pilotoEncontrado.getCpf(),
-                        pilotoEncontrado.getAeronave().getModelo());
+                        aeronaveEncontrada.getModelo());
                         escritaCorreta = true;
                         
     
@@ -182,57 +195,30 @@ public class AppPilotos {
             /* */ 
                 System.out.print("Novo tamanho do armazenamento: ");
                 int tamanhoNovo = 0;
-                try {
-                    tamanhoNovo = in.nextInt();
-                } catch (InputMismatchException ex) {
-                    System.out.println("Digite Somente Números!!");
-                    continue;
-                }
-
-                if(tamanhoNovo == 0){
-                    System.out.println("O tamanho não pode ser = 0!! ");
-                    continue;
-                }
-                in.nextLine(); // Remove o entre preso no Buffer
-
-                if(tamanhoNovo < qtdCadastrados) { // Verifica se o tamanho novo pode causar perdo de danos, qtdCadastrados não pode ser menor de o tamanhoNovo
-                    boolean verificador = false;
-                    do {
-                        System.out.println("O Novo tamanho solicitado é maior que a quantidade de Pilotos atuais!!");
-                        System.out.println("Caso queira prosseguir mesmo assim, os dados a partir do número novo serão apagados!!");
-                        System.out.println("1 - Sim  \n2 - Não :");
-
-                        int decisao = 0;
-                        try {
-                            decisao = in.nextInt();
-                        } catch (InputMismatchException ex) {
-                            System.out.println("Digite Somente Números!!");
-            
-                        }
+                boolean cadastrado = false;
+                do {
+                    try {
+                        tamanhoNovo = in.nextInt();
                         in.nextLine(); // Remove o entre preso no Buffer
 
-                        if(decisao == 2) { // Caso digite não, retorna ao menu e protege os dados cadastrados, caso não, prossegue
-                            voltarMenu(in);
-                            continue;
+                        if(tamanhoNovo <= 20) {
+                            System.out.println("O tamanho deve ser pelo menos > 20!! ");
+                            System.out.print("\nDigite Novamente: ");
 
-                        } else if (decisao != 1 && decisao != 2) { // Caso não seja 1 nem 2, retorna um erro
-                            System.out.println("Entrada inválida, digite somente 1 ou 2");
+                        } else {
+                            cadastrado = true;
                         }
 
-                        verificador = true; // Caso chegue aqui, prossegue para alterar o vetor
-                    } while(!verificador);
+                        
+                    } catch (InputMismatchException ex) {
+                        System.out.println("Digite Somente Números!! ");
+                        in.nextLine(); // Remove o entre preso no Buffer
+                        
+                    } 
+                } while(!cadastrado);
 
 
-                }
-                // Caso queira apagar dados diminuindo demais o tamanho, o valor dessa variável vai ser alterado para a qtd de pilotos atuais
-                int qtdParaPassarComoParametro = qtdCadastrados;
-
-                if(tamanhoNovo < qtdCadastrados){
-                    qtdParaPassarComoParametro = tamanhoNovo;
-                    qtdCadastrados = tamanhoNovo;
-                }
-
-                vetorPilotos.AumentarArmazenamento(vetorPilotos.getPilotos(), tamanhoNovo, qtdParaPassarComoParametro);
+                vetorPilotos.AumentarArmazenamento(vetorPilotos.getPilotos(), tamanhoNovo, qtdCadastrados, vetorPilotos.getAeronaves());
 
                 System.out.println("Tamanho Alterado com Sucesso!! ");
             /* */ 
@@ -273,5 +259,25 @@ public class AppPilotos {
         throw new NullPointerException("Não foi encontrado Nenhum Piloto com o CPF: " + cpfSolicitado);
 
     }
+
+    // Serve para encontrar a aeronave pertencente a algum piloto
+    private static Aeronave encontrarPilotoEmUmaAeronave(Aeronave[] aeronaves, String cpf) {
+
+        Aeronave aeronavesEncontradas = new Aeronave();
+
+        // Valida se na posição atual existe uma aeronave com o cpf do piloto, se sim, atribui ao vetor
+        for (int i = 0; i < aeronaves.length; i++) {
+            if(aeronaves[i].getPiloto().getCpf().equals(cpf)){
+
+                aeronavesEncontradas = aeronaves[i];
+                break;
+            }
+            // Caso não seja true, apenas continua testando
+        }
+
+        return aeronavesEncontradas;
+    }
+
+
 
 }

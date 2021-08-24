@@ -6,20 +6,10 @@ public class Pessoa {
     private String nome;
     private String matricula;
     private String cpf;
-    private Aeronave aeronave;
-    
-    public Aeronave getAeronave() {
-        return aeronave;
-    }
 
-    public void setAeronave(Aeronave aeronave) {
-        this.aeronave = aeronave;
-    }
-
-    public Pessoa(String nome, String matricula, String cpf, Aeronave aeronave) {
+    public Pessoa(String nome, String matricula, String cpf) {
         this.nome = nome;
         this.matricula = matricula;
-        this.aeronave = aeronave;
 
         if(verificarCpf(cpf)){
             this.cpf = cpf;
@@ -33,7 +23,6 @@ public class Pessoa {
     public Pessoa(Pessoa pessoa){
         this.nome = pessoa.nome;
         this.matricula = pessoa.matricula;
-        this.aeronave = pessoa.aeronave;
         if(verificarCpf(pessoa.getCpf())){
             this.cpf = pessoa.getCpf();
         }
