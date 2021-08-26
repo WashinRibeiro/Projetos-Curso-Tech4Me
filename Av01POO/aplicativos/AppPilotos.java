@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import classes.Aeronave;
 import classes.ArmazenarDados;
-import classes.Pessoa;
+import classes.Piloto;
 
 
 public class AppPilotos {
@@ -58,13 +58,16 @@ public class AppPilotos {
                     voltarMenu(in);
                     continue;
                 }
-                Pessoa pilotoParaCadastrar = new Pessoa();
+                Piloto pilotoParaCadastrar = new Piloto();
 
                 System.out.println("Nome do Piloto: ");
                 pilotoParaCadastrar.setNome(in.nextLine());
 
                 System.out.println("Matrícula do Piloto: ");
                 pilotoParaCadastrar.setMatricula(in.nextLine());
+
+                System.out.println("Brevê do Piloto: ");
+                pilotoParaCadastrar.setBreve(in.nextLine());
 
                 System.out.println("CPF do Piloto (000.000.000-00): ");
                 
@@ -123,12 +126,17 @@ public class AppPilotos {
 
             } else if (opcao == 2) {
                 /**/ 
+                if(qtdCadastrados == 0) {
+                    System.out.println("Não Existe nenhum piloto cadastrado no momento!!");
+                    continue;
+                }
 
                 
                 for(int i = 0; i < qtdCadastrados; i++){
-                    System.out.printf("\n-> Piloto número %d \nNome: %s \nMatrícula: %s \nCPF: %s\n\n",
+                    System.out.printf("\n-> Piloto número %d \nNome: %s \nMatrícula: %s \nBrevê: %s \nCPF: %s\n\n",
                         i + 1, vetorPilotos.getPilotos()[i].getNome(), 
                         vetorPilotos.getPilotos()[i].getMatricula(), 
+                        vetorPilotos.getPilotos()[i].getBreve(),
                         vetorPilotos.getPilotos()[i].getCpf());
 
                     // Printa cada aeronave pertence ao mesmo piloto, caso seja o caso
@@ -166,13 +174,13 @@ public class AppPilotos {
                         continue;
                     }
                     try{
-                        Pessoa pilotoEncontrado = new Pessoa(buscarPilotoCPF(cpfSolicitado, qtdCadastrados, vetorPilotos.getPilotos()));
+                        Piloto pilotoEncontrado = new Piloto(buscarPilotoCPF(cpfSolicitado, qtdCadastrados, vetorPilotos.getPilotos()));
                         Aeronave aeronaveEncontrada = new Aeronave(encontrarPilotoEmUmaAeronave(vetorPilotos.getAeronaves(),
                          pilotoEncontrado.getCpf()));
 
                         System.out.println("\nResultado da Busca: ");
-                        System.out.printf("Piloto %s \nMatricula: %s \n== CPF: %s ==\nAeronave Modelo: %s",
-                        pilotoEncontrado.getNome(), pilotoEncontrado.getMatricula(), pilotoEncontrado.getCpf(),
+                        System.out.printf("Piloto %s \nMatricula: %s \nBrevê: %s \n== CPF: %s ==\nAeronave Modelo: %s",
+                        pilotoEncontrado.getNome(), pilotoEncontrado.getMatricula(), pilotoEncontrado.getBreve(),pilotoEncontrado.getCpf(),
                         aeronaveEncontrada.getModelo());
                         escritaCorreta = true;
                         
@@ -247,7 +255,7 @@ public class AppPilotos {
         System.out.flush();
     }
 
-    private static Pessoa buscarPilotoCPF(String cpfSolicitado, int qtdCadastrados, Pessoa... pilotos){
+    private static Piloto buscarPilotoCPF(String cpfSolicitado, int qtdCadastrados, Piloto... pilotos){
 
 
         for (int i = 0; i < qtdCadastrados; i++) {

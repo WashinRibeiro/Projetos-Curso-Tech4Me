@@ -1,17 +1,17 @@
 package classes;
 
 public class ArmazenarDados {
-    private Pessoa[] pilotos;
+    private Piloto[] pilotos;
     private Aeronave[] aeronaves;
 
-    public Pessoa[] getPilotos() {
+    public Piloto[] getPilotos() {
         return pilotos;
     }
 
-    public void AumentarArmazenamento(Pessoa[] pilotosBackup, int tamanhoNovoVetor, int qtdCadastrados, Aeronave[] aeronavesBackup) {
-        pilotos = new Pessoa[tamanhoNovoVetor];
+    public void AumentarArmazenamento(Piloto[] pilotosBackup, int tamanhoNovoVetor, int qtdCadastrados, Aeronave[] aeronavesBackup) {
+        pilotos = new Piloto[tamanhoNovoVetor];
         for (int i = 0; i < qtdCadastrados; i++) {
-            pilotos[i] = new Pessoa();
+            pilotos[i] = new Piloto();
             pilotos[i] = pilotosBackup[i];
         }
 
@@ -24,12 +24,12 @@ public class ArmazenarDados {
     }
 
     public void iniciarVetor(int tamanhoVetor) {
-        pilotos = new Pessoa[tamanhoVetor];
+        pilotos = new Piloto[tamanhoVetor];
         aeronaves = new Aeronave[tamanhoVetor];
     }
 
-    public void setPilotos(Pessoa pilotos, int qtdCadastrados) {
-        this.pilotos[qtdCadastrados] = new Pessoa();
+    public void setPilotos(Piloto pilotos, int qtdCadastrados) {
+        this.pilotos[qtdCadastrados] = new Piloto();
         this.pilotos[qtdCadastrados] = pilotos;
     }
 

@@ -3,7 +3,7 @@ package classes;
 public class Aeronave {
     private String modelo;
     private String categoria; // Se é uma aeronave de asa fixa ou móvel
-    private Pessoa piloto;
+    private Piloto piloto;
     
     public String getModelo() {
         return modelo;
@@ -17,10 +17,10 @@ public class Aeronave {
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
-    public Pessoa getPiloto() {
+    public Piloto getPiloto() {
         return piloto;
     }
-    public void setPiloto(Pessoa piloto) {
+    public void setPiloto(Piloto piloto) {
         this.piloto = piloto;
     }
 

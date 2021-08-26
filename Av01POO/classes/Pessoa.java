@@ -2,14 +2,12 @@ package classes;
 
 import java.util.InputMismatchException;
 
-public class Pessoa {
+public abstract class Pessoa {
     private String nome;
-    private String matricula;
     private String cpf;
 
-    public Pessoa(String nome, String matricula, String cpf) {
+    public Pessoa(String nome, String cpf) {
         this.nome = nome;
-        this.matricula = matricula;
 
         if(verificarCpf(cpf)){
             this.cpf = cpf;
@@ -22,7 +20,6 @@ public class Pessoa {
 
     public Pessoa(Pessoa pessoa){
         this.nome = pessoa.nome;
-        this.matricula = pessoa.matricula;
         if(verificarCpf(pessoa.getCpf())){
             this.cpf = pessoa.getCpf();
         }
@@ -36,14 +33,6 @@ public class Pessoa {
         this.nome = nome;
     }
 
-    public String getMatricula() {
-        return matricula;
-    }
-
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
-    }
-
     public String getCpf() {
         return cpf;
     }
@@ -55,7 +44,7 @@ public class Pessoa {
     }
 
     // Método para evitar repetição da verificação do CPF
-    private boolean verificarCpf(String cpf){
+    boolean verificarCpf(String cpf){
         if(cpf.length() != 14){
             throw new InputMismatchException("\n O tamanho do CPF deve ser = 14, como o padrão: 000.000.000-00");
 
