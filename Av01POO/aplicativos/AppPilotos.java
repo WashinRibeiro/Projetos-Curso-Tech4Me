@@ -5,7 +5,6 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import classes.Aeronave;
-import classes.ArmazenarDados;
 import classes.Piloto;
 
 
@@ -13,24 +12,22 @@ public class AppPilotos {
     public static void main(String[] args) throws InterruptedException, IOException {
 
         final int MAX_ELEMENTOS = 20;
-        int opcao = 5; 
+        int opcao = 5;
         int qtdCadastrados = 0;
         Scanner in = new Scanner(System.in);
         //
 
         /* 
-            Esta classe substitui o vetor original q veio com o programa para evitar um código muito grande na hora de 
-            Aumentar o espaço original do vetor, pois agora tudo é salva num vetor dentro de uma instância q no inicio do programa
-            este vetor é instanciado dentro da classe ArmazenarDados e passa a ter um local de memória para guardar os dados
-            dos pilotos, caso seja expandido, se instancia novamente este vetor e passa um backup do dados para ele
-            Nesta versão final fica mais simples e evitar fazer tratamento para lidar com dois vetores diferentes o tempo todo, 
-            pois agora só se tem um e tudo está dinamizado para ele
-
-            :3
-
+            Talvez perceba que os Commits anteriores tinham uma Classe ArmazenarDados, fiz usando o conceito de alocação de memória 
+            mas depois percebi que era desnecessário, e podia implementar tudo direto aqui, mas usei tudo dela como base
+            para deixar os Vetores Dinâmicos, permitindo que seu tamanho seja alterado o tempo inteiro no programa
         */
-        ArmazenarDados vetorPilotos = new ArmazenarDados();
-        vetorPilotos.iniciarVetor(MAX_ELEMENTOS);
+
+        Piloto[] pilotosCadastrados; // Apenas declaração dos vetores, para ser possível reinstanciar a qualquer momento
+        Aeronave[] aeronavesCadastradas;
+
+        pilotosCadastrados = new Piloto[MAX_ELEMENTOS]; // Valor inicial dos Vetores: 20
+        aeronavesCadastradas = new Aeronave[MAX_ELEMENTOS];
         
 
         //
@@ -53,7 +50,7 @@ public class AppPilotos {
 
             if (opcao == 1) {
                 // Se não tem mais espaço no vetor, caio fora
-                if (qtdCadastrados == vetorPilotos.getPilotos().length) {
+                if (qtdCadastrados == pilotosCadastrados.length) {
                     System.out.println("\nNão há espaço para cadastrar novos pilotos.");
                     voltarMenu(in);
                     continue;
@@ -84,8 +81,8 @@ public class AppPilotos {
                     }
                 }while(cadastrado == false);
 
-                Aeronave aeronave = new Aeronave();
-                aeronave.setPiloto(pilotoParaCadastrar); // Adiciona a a pessoa em uma aeronave
+                Aeronave aeronaveParaCadastrar = new Aeronave();
+                aeronaveParaCadastrar.setPiloto(pilotoParaCadastrar); // Adiciona a a pessoa em uma aeronave
 
                 System.out.println("Categoria da Aeronave (Asa Fixa ou Asa Movel): ");
                 System.out.println("1 - Asa Fixa  \n2 - Asa Móvel  ");
@@ -111,13 +108,14 @@ public class AppPilotos {
                 } else {
                     System.out.println("Categoria Desconhecida!! ");
                 }
-                aeronave.setCategoria(categoria);
+                aeronaveParaCadastrar.setCategoria(categoria);
 
                 System.out.println("Modelo da Aeronave: ");
-                aeronave.setModelo(in.nextLine());
+                aeronaveParaCadastrar.setModelo(in.nextLine());
 
-                vetorPilotos.setPilotos(pilotoParaCadastrar, qtdCadastrados);
-                vetorPilotos.setAeronaves(aeronave, qtdCadastrados);
+                // Instancia e passa o piloto Novo e aeronave Nova para o sistema
+                pilotosCadastrados[qtdCadastrados] = new Piloto(pilotoParaCadastrar); 
+                aeronavesCadastradas[qtdCadastrados] = new Aeronave(aeronaveParaCadastrar);
                 
                 qtdCadastrados++;
 
@@ -134,18 +132,18 @@ public class AppPilotos {
                 
                 for(int i = 0; i < qtdCadastrados; i++){
                     System.out.printf("\n-> Piloto número %d \nNome: %s \nMatrícula: %s \nBrevê: %s \nCPF: %s\n\n",
-                        i + 1, vetorPilotos.getPilotos()[i].getNome(), 
-                        vetorPilotos.getPilotos()[i].getMatricula(), 
-                        vetorPilotos.getPilotos()[i].getBreve(),
-                        vetorPilotos.getPilotos()[i].getCpf());
+                        i + 1, pilotosCadastrados[i].getNome(),
+                        pilotosCadastrados[i].getMatricula(),
+                        pilotosCadastrados[i].getBreve(),
+                        pilotosCadastrados[i].getCpf());
 
                     // Printa cada aeronave pertence ao mesmo piloto, caso seja o caso
-                    Aeronave aeronavesDoPilotoAtual = new Aeronave();
-                    aeronavesDoPilotoAtual = encontrarPilotoEmUmaAeronave(vetorPilotos.getAeronaves(), vetorPilotos.getPilotos()[i].getCpf());
+                    Aeronave aeronaveDoPilotoAtual = new Aeronave();
+                    aeronaveDoPilotoAtual = encontrarPilotoEmUmaAeronave(aeronavesCadastradas, pilotosCadastrados[i].getCpf());
                 
                     System.out.println("Aeronave do piloto: ");
                     // Exibe as Aeronaves do Piloto atual
-                    System.out.printf("> %s\n\n", aeronavesDoPilotoAtual.getModelo());
+                    System.out.printf("> %s\n\n", aeronaveDoPilotoAtual.getModelo());
 
                         
                 }
@@ -165,17 +163,21 @@ public class AppPilotos {
 
                 do {
 
-                    System.out.println("\n\nCase queira sair dessa área, digite null !!");
+                    System.out.println("\n\nCase queira sair dessa área, digite exit !!");
                     System.out.println("Digite o CPF para buscar o Piloto: ");
                     cpfSolicitado = in.nextLine();
 
-                    if(cpfSolicitado.equals("null")){ // Validação para sair do menu caso não saiba algum CPF
+                    if(cpfSolicitado.equals("exit")){ // Validação para sair do menu caso não saiba algum CPF
                         escritaCorreta = true;
                         continue;
                     }
                     try{
-                        Piloto pilotoEncontrado = new Piloto(buscarPilotoCPF(cpfSolicitado, qtdCadastrados, vetorPilotos.getPilotos()));
-                        Aeronave aeronaveEncontrada = new Aeronave(encontrarPilotoEmUmaAeronave(vetorPilotos.getAeronaves(),
+                        // Chama um método que recebe o Vetor e busca algum piloto com aquele CPF indicado
+                        Piloto pilotoEncontrado = new Piloto(buscarPilotoCPF(cpfSolicitado, qtdCadastrados, pilotosCadastrados));
+                        
+                        // Pega o piloto encontrado e passa a um método que vai veriricar qual aeronave possui aquele 
+                        // Piloto Cadastrado nela
+                        Aeronave aeronaveEncontrada = new Aeronave(encontrarPilotoEmUmaAeronave(aeronavesCadastradas,
                          pilotoEncontrado.getCpf()));
 
                         System.out.println("\nResultado da Busca: ");
@@ -209,8 +211,8 @@ public class AppPilotos {
                         tamanhoNovo = in.nextInt();
                         in.nextLine(); // Remove o entre preso no Buffer
 
-                        if(tamanhoNovo <= 20) {
-                            System.out.println("O tamanho deve ser pelo menos > 20!! ");
+                        if(tamanhoNovo <= pilotosCadastrados.length) {
+                            System.out.printf("O tamanho deve ser pelo menos > %d!! ", pilotosCadastrados.length);
                             System.out.print("\nDigite Novamente: ");
 
                         } else {
@@ -226,7 +228,28 @@ public class AppPilotos {
                 } while(!cadastrado);
 
 
-                vetorPilotos.AumentarArmazenamento(vetorPilotos.getPilotos(), tamanhoNovo, qtdCadastrados, vetorPilotos.getAeronaves());
+                // Cria um vetor de Backup com os valores e tamanho do vetor atual
+                Piloto[] pilotosBackup = new Piloto[pilotosCadastrados.length];
+                Aeronave[] aeronavesBackup = new Aeronave[aeronavesCadastradas.length];
+
+                // Atribui os respectivos valores para os vetores de Backup
+                pilotosBackup = pilotosCadastrados;
+                aeronavesBackup = aeronavesCadastradas;
+
+                pilotosCadastrados = new Piloto[tamanhoNovo];
+                aeronavesCadastradas = new Aeronave[tamanhoNovo];
+
+                // Ciclo para restaurar pilotos
+                for (int i = 0; i < qtdCadastrados; i++) {
+                    pilotosCadastrados[i] = new Piloto();
+                    pilotosCadastrados[i] = pilotosBackup[i];
+                }
+
+                // Ciclo para restaurar Aeronaves
+                for (int i = 0; i < qtdCadastrados; i++) {
+                    aeronavesCadastradas[i] = new Aeronave();
+                    aeronavesCadastradas[i] = aeronavesBackup[i];
+                }
 
                 System.out.println("Tamanho Alterado com Sucesso!! ");
             /* */ 
@@ -259,11 +282,14 @@ public class AppPilotos {
 
 
         for (int i = 0; i < qtdCadastrados; i++) {
-            String teste = pilotos[i].getCpf();
+
+            String teste = pilotos[i].getCpf(); // Pega um piloto no VETOR na posição atual
+
             if(teste.equals(cpfSolicitado)){ // Testa até encontrar um piloto
-                return pilotos[i];
+                return pilotos[i]; // Se o piloto for encontrado, retorna ele e sai da função
             }
         }
+        // Se nada for encontrado, automaticamente retorna um erro
         throw new NullPointerException("Não foi encontrado Nenhum Piloto com o CPF: " + cpfSolicitado);
 
     }
